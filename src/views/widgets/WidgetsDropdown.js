@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 
 import {
@@ -37,20 +37,69 @@ const WidgetsDropdown = (props) => {
     })
   }, [widgetChartRef1, widgetChartRef2])
 
+
+
+  const [balance, setBalance] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Retrieve token from local storage
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      setError('No token found in local storage');
+      setLoading(false);
+      return;
+    }
+
+    fetch("https://api.staging.k8s.isypay.net/api/balance/bank", {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return res.json();
+    })
+    .then((data) => {
+      // Check if data is not empty
+      if (Object.keys(data).length === 0 && data.constructor === Object) {
+        throw new Error('Empty response received');
+      }
+      setBalance(data);
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.error('Error fetching balance:', err);
+      setError(err.message);
+      setLoading(false);
+    });
+  }, []);
+
+
+  const formatBalance = (balance) => {
+    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'CFA' }).format(balance);
+  };
+
+
   return (
     <CRow className={props.className} xs={{ gutter: 4 }}>
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
-          color="primary"
+        style={{ backgroundColor: '#14de94' }}
           value={
-            <>
-              26K{' '}
-              <span className="fs-6 fw-normal">
-                (-12.4% <CIcon icon={cilArrowBottom} />)
-              </span>
-            </>
+            balance ? (
+              <>
+                <p>Token Balance: {formatBalance(balance.tokenBalance)}</p>
+              </>
+            ) : (
+              <p>Loading...</p>
+            )
           }
-          title="Users"
+          //title="Users"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
@@ -133,14 +182,16 @@ const WidgetsDropdown = (props) => {
         <CWidgetStatsA
           color="info"
           value={
-            <>
-              $6.200{' '}
-              <span className="fs-6 fw-normal">
-                (40.9% <CIcon icon={cilArrowTop} />)
-              </span>
-            </>
+
+            balance ? (
+              <>
+                <p>Fiat Balance: {formatBalance(balance.fiatBalance)}</p>
+              </>
+            ) : (
+              <p>Loading...</p>
+            )
           }
-          title="Income"
+          //title="Income"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
@@ -218,7 +269,7 @@ const WidgetsDropdown = (props) => {
           }
         />
       </CCol>
-      <CCol sm={6} xl={4} xxl={3}>
+     {/* <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="warning"
           value={
@@ -383,7 +434,7 @@ const WidgetsDropdown = (props) => {
             />
           }
         />
-      </CCol>
+        </CCol>*/}
     </CRow>
   )
 }

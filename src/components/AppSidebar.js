@@ -1,5 +1,6 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom';
 
 import {
   CCloseButton,
@@ -8,8 +9,11 @@ import {
   CSidebarFooter,
   CSidebarHeader,
   CSidebarToggler,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
+  CSidebarNav,
+  CNavItem,
+} from '@coreui/react';
+import { cilAccountLogout } from '@coreui/icons'; // Corrected import
+import CIcon from '@coreui/icons-react';
 
 import { AppSidebarNav } from './AppSidebarNav'
 
@@ -23,6 +27,18 @@ const AppSidebar = () => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
+  const submitLogout = () => {
+    // Clear user session or token here
+    localStorage.removeItem('token'); // Example of clearing the token from localStorage
+    // Redirect to login page
+    navigate('/login');
+  };
+
+  const handleLogout = () => {
+    console.log("Logging out");
+    submitLogout();
+  };
+  const navigate = useNavigate();
 
   return (
     <CSidebar
@@ -37,7 +53,7 @@ const AppSidebar = () => {
     >
       <CSidebarHeader className="border-bottom">
         <CSidebarBrand to="/">
-          <CIcon customClassName="sidebar-brand-full" icon={logo} height={32} />
+          <CIcon customClassName="sidebar-brand-full" icon={logo} height={50} />
           <CIcon customClassName="sidebar-brand-narrow" icon={sygnet} height={32} />
         </CSidebarBrand>
         <CCloseButton
@@ -47,9 +63,17 @@ const AppSidebar = () => {
         />
       </CSidebarHeader>
       <AppSidebarNav items={navigation} />
-      <CSidebarFooter className="border-top d-none d-lg-flex">
+      <CSidebarFooter style={{ cursor: 'pointer' }}>
+
+            <CIcon icon={cilAccountLogout} height={20} onClick={handleLogout}/>
+            <div onClick={handleLogout} style={{fontSize: 15 }}> Logout</div>
+
+
         <CSidebarToggler
-          onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}
+          onClick={() => {
+            dispatch({ type: 'set', sidebarUnfoldable: !unfoldable });
+            setSidebarExpand(!sidebarExpand);
+          }}
         />
       </CSidebarFooter>
     </CSidebar>

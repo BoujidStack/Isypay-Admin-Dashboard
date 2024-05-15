@@ -12,6 +12,9 @@ import {
   cilPuzzle,
   cilSpeedometer,
   cilStar,
+  cilBank,
+  cilWallet,
+  cilTransfer,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -23,10 +26,21 @@ const _nav = [
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
     badge: {
       color: 'info',
-      text: 'NEW',
     },
   },
+  /*{
+    component: CNavItem,
+    name: 'Transactions', // The name that will be displayed in the sidebar
+    to: '/Transactions', // The path to the component that will be rendered when the menu item is clicked
+    icon: <CIcon icon={cilTransfer} customClassName="nav-icon" />, // Choose an icon from the imported icons
+  },
   {
+    component: CNavItem,
+    name: 'Deposit/Withdrawals', // The name that will be displayed in the sidebar
+    to: '/Deposit/Withdrawals', // The path to the component that will be rendered when the menu item is clicked
+    icon: <CIcon icon={cilBank} customClassName="nav-icon" />, // Choose an icon from the imported icons
+  },
+   {
     component: CNavTitle,
     name: 'Theme',
   },
@@ -193,8 +207,7 @@ const _nav = [
         to: '/forms/validation',
       },
     ],
-  },
-  {
+  },{
     component: CNavItem,
     name: 'Charts',
     to: '/charts',
@@ -299,7 +312,7 @@ const _nav = [
     name: 'Docs',
     href: 'https://coreui.io/react/docs/templates/installation/',
     icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
-  },
+  }, */
 ]
 
 export default _nav

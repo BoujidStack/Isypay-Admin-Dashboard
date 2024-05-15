@@ -1,8 +1,11 @@
 import React from 'react'
-
+import requireAuth from './requireAuth'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
+const Transactions = React.lazy(() => import('./views/Transactions/Transactions'))
+const DepositWithdrawals = React.lazy(() => import('./views/DepositWithdrawals/DepositWithdrawals'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
+const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -52,8 +55,9 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
-  { path: '/dashboard', name: 'Dashboard', element: Dashboard },
-  { path: '/theme', name: 'Theme', element: Colors, exact: true },
+  { path: '/dashboard', name: 'Dashboard', element: requireAuth(Dashboard), exact: true },
+  { path: '*', name: 'Page 404', element: Page404 },
+  /*{ path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
   { path: '/base', name: 'Base', element: Cards, exact: true },
@@ -94,7 +98,7 @@ const routes = [
   { path: '/notifications/badges', name: 'Badges', element: Badges },
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
-  { path: '/widgets', name: 'Widgets', element: Widgets },
+  { path: '/widgets', name: 'Widgets', element: Widgets },*/
 ]
 
 export default routes
