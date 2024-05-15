@@ -37,8 +37,6 @@ const WidgetsDropdown = (props) => {
     })
   }, [widgetChartRef1, widgetChartRef2])
 
-
-
   const [balance, setBalance] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -79,39 +77,29 @@ const WidgetsDropdown = (props) => {
     });
   }, []);
 
-
   const formatBalance = (balance) => {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'CFA' }).format(balance);
-  };
+    if (typeof balance !== 'number') {
+      return balance; // return balance as is if it's not a number
+    }
 
+    // Convert balance to locale string with thousands separator
+    return balance.toLocaleString('fr-FR').replace(/\s/g, '\u2009'); // Using '\u2009' as the non-breaking space
+  };
 
   return (
     <CRow className={props.className} xs={{ gutter: 4 }}>
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
-        style={{ backgroundColor: '#14de94' }}
+          style={{ backgroundColor: '#14de94' }}
           value={
             balance ? (
               <>
-                <p>Token Balance: {formatBalance(balance.tokenBalance)}</p>
+                <p>Fiat Balance :</p>
+                <p>{formatBalance(balance.fiatBalance)} CFA</p>
               </>
             ) : (
               <p>Loading...</p>
             )
-          }
-          //title="Users"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
-                <CIcon icon={cilOptions} />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
           }
           chart={
             <CChartLine
@@ -182,28 +170,14 @@ const WidgetsDropdown = (props) => {
         <CWidgetStatsA
           color="info"
           value={
-
             balance ? (
               <>
-                <p>Fiat Balance: {formatBalance(balance.fiatBalance)}</p>
+                <p>Token Balance :</p>
+                <p>{formatBalance(balance.tokenBalance)}</p>
               </>
             ) : (
               <p>Loading...</p>
             )
-          }
-          //title="Income"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
-                <CIcon icon={cilOptions} />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
           }
           chart={
             <CChartLine
@@ -269,179 +243,14 @@ const WidgetsDropdown = (props) => {
           }
         />
       </CCol>
-     {/* <CCol sm={6} xl={4} xxl={3}>
-        <CWidgetStatsA
-          color="warning"
-          value={
-            <>
-              2.49%{' '}
-              <span className="fs-6 fw-normal">
-                (84.7% <CIcon icon={cilArrowTop} />)
-              </span>
-            </>
-          }
-          title="Conversion Rate"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
-                <CIcon icon={cilOptions} />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
-          chart={
-            <CChartLine
-              className="mt-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [
-                  {
-                    label: 'My First dataset',
-                    backgroundColor: 'rgba(255,255,255,.2)',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    data: [78, 81, 80, 45, 34, 12, 40],
-                    fill: true,
-                  },
-                ],
-              }}
-              options={{
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                maintainAspectRatio: false,
-                scales: {
-                  x: {
-                    display: false,
-                  },
-                  y: {
-                    display: false,
-                  },
-                },
-                elements: {
-                  line: {
-                    borderWidth: 2,
-                    tension: 0.4,
-                  },
-                  point: {
-                    radius: 0,
-                    hitRadius: 10,
-                    hoverRadius: 4,
-                  },
-                },
-              }}
-            />
-          }
-        />
-      </CCol>
-      <CCol sm={6} xl={4} xxl={3}>
-        <CWidgetStatsA
-          color="danger"
-          value={
-            <>
-              44K{' '}
-              <span className="fs-6 fw-normal">
-                (-23.6% <CIcon icon={cilArrowBottom} />)
-              </span>
-            </>
-          }
-          title="Sessions"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
-                <CIcon icon={cilOptions} />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
-          chart={
-            <CChartBar
-              className="mt-3 mx-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: [
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December',
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                ],
-                datasets: [
-                  {
-                    label: 'My First dataset',
-                    backgroundColor: 'rgba(255,255,255,.2)',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
-                    barPercentage: 0.6,
-                  },
-                ],
-              }}
-              options={{
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                scales: {
-                  x: {
-                    grid: {
-                      display: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    border: {
-                      display: false,
-                    },
-                    grid: {
-                      display: false,
-                      drawBorder: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                },
-              }}
-            />
-          }
-        />
-        </CCol>*/}
+      {/* Additional widget components */}
     </CRow>
-  )
-}
+  );
+};
 
 WidgetsDropdown.propTypes = {
   className: PropTypes.string,
   withCharts: PropTypes.bool,
-}
+};
 
-export default WidgetsDropdown
+export default WidgetsDropdown;
