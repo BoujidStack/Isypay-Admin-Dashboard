@@ -21,6 +21,15 @@ function DepositWithdrawals() {
     setOperationCode(e.target.value);
   };
 
+  function formatPhoneNumber(phoneNumberString) {
+    const cleaned = ('' + phoneNumberString).replace(/\D/g, '');
+    const match = cleaned.match(/^223(\d{2})(\d{2})(\d{2})(\d{2})$/);
+    if (match) {
+      return '+223 ' + match[1] + ' ' + match[2] + ' ' + match[3] + ' ' + match[4];
+    }
+    return phoneNumberString;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
@@ -38,26 +47,29 @@ function DepositWithdrawals() {
         // Constructing the message
         // Calculate total amount
         const totalAmount = data.amount + data.totalFee;
+        const fullNames = data.user.firstName + ' ' + data.user.lastName;
 
         // Constructing the message
         const message = `
-<div style="text-align: center;">
-  <div style="display: inline-block; text-align: left;">
-    Hello Supermarket's ${data.user.displayName}<br>
-    phoneNumber: ${data.user.phoneNumber},<br>
-    Type: ${data.dwType.toUpperCase()},<br>
-    amount: ${data.amount},<br>
-    Fees: ${data.totalFee},<br>
-    Total amount: ${totalAmount}<br><br>
-
-    Are you agree to continue?
+<div style="text-align: center; font-family: Arial, sans-serif;">
+  <div style="display: inline-block; text-align: left; border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: #f9f9f9;">
+    <p style="margin: 5px 0;">Commerce's name: <span style="font-weight: bold;">${data.user.displayName}</span></p>
+    <p style="margin: 5px 0;">Full names: <span style="font-weight: bold;">${fullNames}</span></p>
+    <p style="margin: 5px 0;">Phone number: <span style="font-weight: bold;">${formatPhoneNumber(data.user.phoneNumber)}</span></p>
+    <p style="margin: 5px 0;">Type: <span style="font-weight: bold;">${data.dwType.toUpperCase()}</span></p>
+    <p style="margin: 5px 0;">Amount: <span style="font-weight: bold;">${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(data.amount)}</span></p>
+    <p style="margin: 5px 0;">Fees: <span style="font-weight: bold;">${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(data.totalFee)}</span></p>
+    <p style="margin: 5px 0;">Total To Pay: <span style="font-weight: bold;">${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(totalAmount)}</span></p>
+    <br>
+    <p>Are you agree to continue?</p>
   </div>
 </div>
+
 `;
 
         // Show confirmation dialog
         const result = await MySwal.fire({
-          title: `Confirmation Transaction :`,
+          title: `Transaction Confirmation`,
           html: message,
           showCancelButton: true,
           confirmButtonText: 'Accept',
@@ -140,12 +152,12 @@ function DepositWithdrawals() {
   return (
     <>
       <CCard className="mb-4">
-        <CCardHeader>Deposit/Withdrawals</CCardHeader>
+        <CCardHeader>IsyPay Customer Deposit and Withdrawal</CCardHeader>
         <CCol sm={10} style={{ marginLeft: '20px', marginTop: '20px', marginBottom: '20px' }}>
           <CForm className="row g-3 d-flex align-items-center" onSubmit={handleSubmit}>
             <CCol xs="auto" className="d-flex flex-row align-items-center">
               <CFormLabel htmlFor="operationCode" className="me-2" style={{ whiteSpace: 'nowrap' }}>
-                Operation Code :
+                Operation code :
               </CFormLabel>
               <CFormInput type="text" id="operationCode" placeholder="Enter Operation Code" value={operationCode} onChange={handleInputChange} className="me-2" />
               <CButton color="info" type="submit" className="ms-2">
