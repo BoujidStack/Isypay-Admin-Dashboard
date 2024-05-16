@@ -94,7 +94,7 @@ const WidgetsDropdown = (props) => {
           value={
             balance ? (
               <>
-                <p>Fiat Balance :</p>
+                <p>Fiat Balance</p>
                 <p>{formatBalance(balance.fiatBalance)} CFA</p>
               </>
             ) : (
@@ -172,7 +172,7 @@ const WidgetsDropdown = (props) => {
           value={
             balance ? (
               <>
-                <p>Token Balance :</p>
+                <p>Token Balance</p>
                 <p>{formatBalance(balance.tokenBalance)}</p>
               </>
             ) : (
