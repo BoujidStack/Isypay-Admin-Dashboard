@@ -31,5 +31,5 @@ jobs:
           server: ${{ secrets.HOSTINGER_FTP_HOST }}
           username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
           password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
-          local-dir: dist
+          local-dir: dist/
           server-dir: /public_html/bank-staging # Change to your desired directory on the server
