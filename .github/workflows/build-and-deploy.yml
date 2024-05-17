@@ -1,0 +1,35 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Enables manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to Hostinger
+        uses: SamKirkland/FTP-Deploy-Action@4.2.0
+        with:
+          ftp-server: ${{ secrets.HOSTINGER_FTP_HOST }}
+          ftp-username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
+          ftp-password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+          local-dir: dist
+          server-dir: /public_html/bank-staging # Change to your desired directory on the server
