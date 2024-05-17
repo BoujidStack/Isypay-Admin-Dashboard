@@ -6,16 +6,17 @@ import {
   CCol,
   CButton,
   CCardHeader,
-  CCard
+  CCard,
+  CSpinner,
 } from '@coreui/react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { cilPeople } from '@coreui/icons';
 
 const MySwal = withReactContent(Swal);
 
 function DepositWithdrawals() {
   const [operationCode, setOperationCode] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     setOperationCode(e.target.value);
@@ -44,7 +45,6 @@ function DepositWithdrawals() {
 
       if (response.ok) {
         const data = await response.json();
-        // Constructing the message
         // Calculate total amount
         const totalAmount = data.amount + data.totalFee;
         const fullNames = data.user.firstName + ' ' + data.user.lastName;
@@ -64,7 +64,6 @@ function DepositWithdrawals() {
     <p>Are you agree to continue?</p>
   </div>
 </div>
-
 `;
 
         // Show confirmation dialog
@@ -75,7 +74,6 @@ function DepositWithdrawals() {
           confirmButtonText: 'Accept',
           cancelButtonText: 'Cancel'
         });
-
 
         // If the user confirms, prompt for the pin code
         if (result.isConfirmed) {
@@ -88,42 +86,48 @@ function DepositWithdrawals() {
               'autocapitalize': 'off',
               'autocorrect': 'off'
             },
-            showCancelButton: true
+            showCancelButton: true,
+            preConfirm: () => {
+              // Set loading state to true to show the spinner
+              setLoading(true);
+            }
           });
-
 
           // If a pin code is entered, make the PUT request to accept the operation
           if (pin) {
-            const acceptResponse = await fetch(`https://api.staging.k8s.isypay.net/api/bank-deposit-withdrawals/accept/${operationCode}?txPin=${pin}`, {
-              method: 'PUT',
-              headers: {
-                'Authorization': `Bearer ${token}`
-              }
-            });
+            try {
+              const acceptResponse = await fetch(`https://api.staging.k8s.isypay.net/api/bank-deposit-withdrawals/accept/${operationCode}?txPin=${pin}`, {
+                method: 'PUT',
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              });
 
-            if (acceptResponse.ok) {
-              // Handle successful acceptance
-              MySwal.fire({
-                icon: 'success',
-                title: 'Accepted!',
-                text: 'The operation has been successfully accepted.',
-              }).then(() => {
-                // Set the operation code after successful acceptance
-                setOperationCode(operationCode);
-              });
-            } else {
-              // Handle errors in acceptance
-              const acceptErrorData = await acceptResponse.json();
-              MySwal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: `Error: ${acceptErrorData.errorKey}`,
-              });
+              if (acceptResponse.ok) {
+                // Handle successful acceptance
+                MySwal.fire({
+                  icon: 'success',
+                  title: 'Accepted!',
+                  text: 'The operation has been successfully accepted.',
+                }).then(() => {
+                  // Clear the operation code after successful acceptance
+                  setOperationCode('');
+                });
+              } else {
+                // Handle errors in acceptance
+                const acceptErrorData = await acceptResponse.json();
+                MySwal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: `Error: ${acceptErrorData.errorKey}`,
+                });
+              }
+            } finally {
+              setLoading(false); // Stop loading
             }
+          } else {
+            setLoading(false); // Stop loading if pin entry is cancelled
           }
-        } else {
-          // Handle the cancellation action
-          console.log('Operation cancelled by the user.');
         }
       } else {
         // Handle errors in fetching fees
@@ -142,12 +146,8 @@ function DepositWithdrawals() {
         title: 'Oops...',
         text: 'An unexpected error occurred.',
       });
-    } finally {
-      // Reset the operation code
-      setOperationCode('');
     }
   };
-
 
   return (
     <>
@@ -160,14 +160,29 @@ function DepositWithdrawals() {
                 Operation code :
               </CFormLabel>
               <CFormInput type="text" id="operationCode" placeholder="Enter Operation Code" value={operationCode} onChange={handleInputChange} className="me-2" />
-              <CButton color="info" type="submit" className="ms-2">
+              <CButton color="info" type="submit" className="ms-2" disabled={loading}>
                 Search
               </CButton>
             </CCol>
           </CForm>
-
         </CCol>
       </CCard>
+      {loading && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          zIndex: 9999
+        }}>
+          <CSpinner style={{ width: '4rem', height: '4rem' }} />
+        </div>
+      )}
     </>
   );
 }
